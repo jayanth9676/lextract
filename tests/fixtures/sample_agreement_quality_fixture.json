@@ -1,0 +1,151 @@
+{
+  "document_name": "AMENDED AND RESTATED LOAN AND SECURITY AGREEMENT",
+  "cases": [
+    {
+      "field_id": "borrower_name",
+      "raw_result": {
+        "value": "Company",
+        "confidence": 0.18,
+        "is_absent": false
+      },
+      "chunks": [
+        {
+          "chunk_id": "preamble-1",
+          "clause_id": null,
+          "section_title": "Preamble",
+          "page_start": 1,
+          "page_end": 1,
+          "text": "THIS AMENDED AND RESTATED LOAN AND SECURITY AGREEMENT dated as of April 30, 2004 (this \"Agreement\") is entered into among MATERIAL SCIENCES CORPORATION (the \"Company\"), the financial institutions that are or may from time to time become parties hereto and LASALLE BANK NATIONAL ASSOCIATION (in its individual capacity, \"LaSalle\"), as administrative agent for the Lenders."
+        }
+      ],
+      "expected": {
+        "match_type": "exact",
+        "value": "MATERIAL SCIENCES CORPORATION",
+        "is_absent": false
+      }
+    },
+    {
+      "field_id": "lender_name",
+      "raw_result": {
+        "value": "LASALLE BANK NATIONAL ASSOCIATION (in its individual capacity, \"LaSalle\")",
+        "confidence": 0.71,
+        "is_absent": false
+      },
+      "chunks": [
+        {
+          "chunk_id": "preamble-1",
+          "clause_id": null,
+          "section_title": "Preamble",
+          "page_start": 1,
+          "page_end": 1,
+          "text": "THIS AMENDED AND RESTATED LOAN AND SECURITY AGREEMENT dated as of April 30, 2004 (this \"Agreement\") is entered into among MATERIAL SCIENCES CORPORATION (the \"Company\"), the financial institutions that are or may from time to time become parties hereto and LASALLE BANK NATIONAL ASSOCIATION (in its individual capacity, \"LaSalle\"), as administrative agent for the Lenders."
+        }
+      ],
+      "expected": {
+        "match_type": "exact",
+        "value": "LASALLE BANK NATIONAL ASSOCIATION",
+        "is_absent": false
+      }
+    },
+    {
+      "field_id": "facility_amount",
+      "raw_result": {
+        "value": "$1,000,000 minimum reduction amount",
+        "confidence": 0.64,
+        "is_absent": false
+      },
+      "chunks": [
+        {
+          "chunk_id": "facility-1",
+          "clause_id": "SECTION 6.1.1",
+          "section_title": "Section 6.1.1",
+          "page_start": 29,
+          "page_end": 29,
+          "text": "6.1.1 Voluntary Reduction or Termination of the Revolving Commitment. The Company may from time to time permanently reduce the Commitment to an amount not less than the Revolving Outstandings. Any such reduction shall be in an amount not less than $1,000,000 or a higher integral multiple of $100,000."
+        },
+        {
+          "chunk_id": "facility-2",
+          "clause_id": null,
+          "section_title": "Collateral",
+          "page_start": 4,
+          "page_end": 4,
+          "text": "Commitment means, as to any Lender, such Lender's commitment to make Loans, and to issue or participate in Letters of Credit, under this Agreement. The initial amount of each Lender's commitment to make Loans is set forth on Annex A."
+        }
+      ],
+      "expected": {
+        "match_type": "absent",
+        "value": null,
+        "is_absent": true
+      }
+    },
+    {
+      "field_id": "currency",
+      "raw_result": {
+        "value": null,
+        "confidence": 0.0,
+        "is_absent": true
+      },
+      "chunks": [
+        {
+          "chunk_id": "currency-1",
+          "clause_id": null,
+          "section_title": "Note",
+          "page_start": 80,
+          "page_end": 80,
+          "text": "Payments of both principal and interest are to be made in lawful money of the United States of America."
+        }
+      ],
+      "expected": {
+        "match_type": "exact",
+        "value": "USD",
+        "is_absent": false
+      }
+    },
+    {
+      "field_id": "maturity_date",
+      "raw_result": {
+        "value": "Termination Date",
+        "confidence": 0.21,
+        "is_absent": false
+      },
+      "chunks": [
+        {
+          "chunk_id": "maturity-1",
+          "clause_id": null,
+          "section_title": "Definitions",
+          "page_start": 20,
+          "page_end": 20,
+          "text": "Termination Date means the earlier to occur of (a) October 11, 2007 or (b) such other date on which the Commitments terminate pursuant to Section 6 or 14."
+        }
+      ],
+      "expected": {
+        "match_type": "exact",
+        "value": "October 11, 2007",
+        "is_absent": false
+      }
+    },
+    {
+      "field_id": "governing_law",
+      "raw_result": {
+        "value": "This Assignment shall be governed by and construed in accordance with the laws of the State of Illinois.",
+        "confidence": 0.79,
+        "is_absent": false
+      },
+      "chunks": [
+        {
+          "chunk_id": "law-1",
+          "clause_id": "SECTION 16.18",
+          "section_title": "Forum Selection",
+          "page_start": 76,
+          "page_end": 76,
+          "text": "This Agreement shall be governed by and construed in accordance with the laws of the State of Illinois."
+        }
+      ],
+      "expected": {
+        "match_type": "exact",
+        "value": "State of Illinois",
+        "is_absent": false
+      }
+    }
+  ]
+}

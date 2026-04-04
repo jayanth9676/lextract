@@ -1,0 +1,933 @@
+# Extensible extraction schema — add fields without code changes.
+fields:
+  - id: loan_agreement_id
+    label: Loan / Agreement ID
+    category: Identification
+    answer_style: text
+    retrieval_queries:
+      - agreement number facility identifier loan id reference number
+      - agreement id note number facility id
+    aliases:
+      - agreement id
+      - facility id
+      - reference number
+    evidence_hints:
+      - Agreement No.
+      - Facility ID
+      - Reference Number
+    prompt_instructions: >
+      Return the agreement or facility identifier only when an explicit document id,
+      number, or reference is stated. If no formal identifier appears in the evidence,
+      mark the field absent.
+
+  - id: agreement_date_effective_date
+    label: Agreement Date & Effective Date
+    category: Identification
+    answer_style: date
+    retrieval_queries:
+      - date of this agreement effective date dated as of closing date
+      - agreement dated as of effective date
+    aliases:
+      - agreement date
+      - effective date
+      - dated as of
+      - closing date
+    evidence_hints:
+      - dated as of
+      - effective date means
+      - date hereof
+    prompt_instructions: >
+      Return the agreement date and effective date together when both are explicit. If
+      only one date is stated, return the stated date and identify it concisely.
+
+  - id: borrower_name
+    label: Borrower Name & Legal Entity Type
+    category: Identification
+    answer_style: entity
+    post_processor: borrower_name
+    retrieval_limit: 5
+    retrieval_queries:
+      - borrower name loan agreement party
+      - exact legal name of borrower obligor company
+      - preamble company entered into among
+    aliases:
+      - borrower
+      - obligor
+      - company
+      - loan party
+      - preamble
+    evidence_hints:
+      - entered into among
+      - Company - see the Preamble
+      - this amended and restated loan and security agreement
+    prompt_instructions: >
+      Return the exact legal entity name of the borrower and include the legal entity
+      type if it is explicitly stated nearby.
+
+  - id: borrower_jurisdiction
+    label: Borrower Jurisdiction of Incorporation
+    category: Identification
+    answer_style: jurisdiction
+    retrieval_queries:
+      - borrower jurisdiction of incorporation organized under laws of
+      - company is a delaware corporation jurisdiction organization
+    aliases:
+      - jurisdiction of incorporation
+      - state of incorporation
+      - organized under the laws of
+      - corporation
+    evidence_hints:
+      - organized under the laws of
+      - a Delaware corporation
+      - validly existing
+    prompt_instructions: >
+      Return the borrower's jurisdiction of incorporation or organization only, such as
+      "Delaware" or "State of Illinois".
+
+  - id: lender_name
+    label: Lender(s) Name(s)
+    category: Identification
+    answer_style: entity
+    post_processor: lender_name
+    retrieval_limit: 5
+    retrieval_queries:
+      - lender facility agent administrative agent
+      - exact legal name of administrative agent lender
+      - preamble lasalle lender agent
+    aliases:
+      - lender
+      - lenders
+      - administrative agent
+      - issuing lender
+      - arranger
+    evidence_hints:
+      - as administrative agent for the lenders
+      - in its individual capacity
+      - Lender - see the Preamble
+    prompt_instructions: >
+      Return the named lender or administrative agent legal entity. If multiple lenders
+      are listed, summarize the lender group and the named agent concisely.
+
+  - id: guarantors
+    label: Guarantor(s) / Co-obligors
+    category: Identification
+    answer_style: summary
+    retrieval_queries:
+      - guarantors co-obligors guaranty parties loan parties
+      - guarantors mean collectively guaranty agreement
+    aliases:
+      - guarantor
+      - guarantors
+      - co-obligor
+      - guaranty
+    evidence_hints:
+      - Guarantors mean
+      - Guaranty and Collateral Agreement
+    prompt_instructions: >
+      Return the guarantors or co-obligors explicitly named in the agreement. If there
+      is a defined collective group, summarize the named entities or the group clearly.
+
+  - id: obligor_country_sector
+    label: Obligor Country & Sector
+    category: Identification
+    answer_style: summary
+    retrieval_queries:
+      - obligor country sector business industry borrower operations
+      - company business sector jurisdiction country
+    aliases:
+      - country
+      - sector
+      - industry
+      - business
+    evidence_hints:
+      - corporation
+      - company
+      - business
+    prompt_instructions: >
+      Return the obligor's country and operating sector only if the evidence states both
+      or provides a clear business description.
+
+  - id: facility_amount
+    label: Loan Amount (Currency & Principal)
+    category: Financial Terms
+    answer_style: amount
+    post_processor: facility_amount
+    retrieval_limit: 5
+    retrieval_queries:
+      - aggregate commitments facility amount principal cap
+      - total revolving commitment amount
+      - maximum loan amount commitment
+    aliases:
+      - facility
+      - commitment
+      - revolving commitment
+      - aggregate commitments
+      - principal amount
+    evidence_hints:
+      - commitment means
+      - Annex A
+      - aggregate stated amount
+      - revolving loan commitment
+    prompt_instructions: >
+      Return only the overall facility or commitment amount. Do not return per-lender
+      commitments, minimum increment thresholds, fees, or letter-of-credit sublimits.
+
+  - id: tranche_structure
+    label: Tranche Structure
+    category: Financial Terms
+    answer_style: summary
+    retrieval_queries:
+      - tranche structure revolving loan term loan letter of credit facility
+      - types of loans tranches commitments
+    aliases:
+      - tranche
+      - revolving loan
+      - term loan
+      - letter of credit
+    evidence_hints:
+      - Various Types of Loans
+      - Revolving Loan Commitment
+      - L/C Commitment
+    prompt_instructions: >
+      Summarize the facility structure, including revolving, term, letter-of-credit, or
+      other distinct tranches stated in the agreement.
+
+  - id: interest_rate
+    label: Interest Rate Type / Applicable Margin / Spread
+    category: Financial Terms
+    answer_style: rate
+    post_processor: interest_rate
+    retrieval_queries:
+      - interest margin LIBOR SOFR benchmark rate
+      - base rate margin libor margin applicable margin
+      - pricing table interest rate loan
+    aliases:
+      - interest rate
+      - libor margin
+      - base rate margin
+      - applicable margin
+      - fixed or floating
+    evidence_hints:
+      - at a rate per annum equal to
+      - LIBOR Margin
+      - Base Rate Margin
+    prompt_instructions: >
+      Return the operative rate type and margin/spread formulation supported by the
+      evidence, for example Base Rate plus margin and LIBOR plus margin.
+
+  - id: interest_payment_frequency
+    label: Interest Payment Frequency
+    category: Financial Terms
+    answer_style: text
+    retrieval_queries:
+      - interest payment dates frequency payable in arrears
+      - interest shall be paid monthly quarterly on last day
+    aliases:
+      - interest payment date
+      - payable in arrears
+      - frequency
+    evidence_hints:
+      - Interest Payment Dates
+      - payable in arrears
+    prompt_instructions: >
+      Return the contractual interest payment frequency or schedule in concise form.
+
+  - id: repayment_schedule
+    label: Repayment Schedule
+    category: Financial Terms
+    answer_style: summary
+    retrieval_queries:
+      - repayment schedule principal amortization repayments prepayments
+      - loans shall be paid in full scheduled principal payments
+    aliases:
+      - repayment
+      - amortization
+      - scheduled principal
+      - repayments
+    evidence_hints:
+      - scheduled payments of principal
+      - Repayments
+      - Manner of Prepayments
+    prompt_instructions: >
+      Summarize the principal repayment mechanics, including any scheduled repayment,
+      bullet maturity, or prepayment framework supported by the evidence.
+
+  - id: maturity_date
+    label: Final Maturity Date
+    category: Dates & Milestones
+    answer_style: date
+    post_processor: maturity_date
+    retrieval_limit: 5
+    retrieval_queries:
+      - maturity final repayment termination date
+      - loans due on termination date
+      - definition of termination date maturity date
+    aliases:
+      - maturity date
+      - final repayment date
+      - termination date
+      - scheduled termination date
+    evidence_hints:
+      - Termination Date means
+      - scheduled Termination Date
+      - loans shall be paid in full
+    prompt_instructions: >
+      Return the final date on which the loans or commitments terminate. Prefer the
+      defined Termination Date or Maturity Date.
+
+  - id: grace_period_moratorium
+    label: Grace Period / Moratorium
+    category: Financial Terms
+    answer_style: text
+    retrieval_queries:
+      - grace period moratorium cure period deferral payment holiday
+      - not cured within days cure period
+    aliases:
+      - grace period
+      - moratorium
+      - cure period
+      - deferral
+    evidence_hints:
+      - not cured within
+      - grace period
+      - moratorium
+    prompt_instructions: >
+      Return any expressly stated payment grace period, moratorium, or comparable
+      deferral period. If only covenant cure periods are found, identify them clearly.
+
+  - id: currency
+    label: Currency of Repayment
+    category: Financial Terms
+    answer_style: currency
+    post_processor: currency
+    retrieval_limit: 5
+    retrieval_queries:
+      - loan currency united states dollars dollars lawful money
+      - currency of payment for loans and obligations
+      - denominated in dollars or usd
+    aliases:
+      - currency
+      - dollars
+      - united states dollars
+      - usd
+      - lawful money
+    evidence_hints:
+      - lawful money of the United States of America
+      - offshore United States dollars
+      - Dollars
+    prompt_instructions: >
+      Return the contractual repayment currency in a concise standard format such as USD.
+
+  - id: permitted_use_of_proceeds
+    label: Permitted Use of Proceeds
+    category: Disbursement
+    answer_style: summary
+    retrieval_queries:
+      - use of proceeds permitted use working capital acquisitions refinancing
+      - loan proceeds may be used for
+    aliases:
+      - use of proceeds
+      - proceeds
+      - working capital
+      - refinancing
+    evidence_hints:
+      - Use of Proceeds
+      - proceeds shall be used
+    prompt_instructions: >
+      Summarize the permitted uses of the loan proceeds stated in the agreement.
+
+  - id: conditions_precedent
+    label: Conditions Precedent (CPs)
+    category: Disbursement
+    answer_style: summary
+    retrieval_queries:
+      - conditions precedent closing conditions conditions to borrowing
+      - no lender shall have obligation unless conditions satisfied
+    aliases:
+      - conditions precedent
+      - conditions to borrowing
+      - closing conditions
+    evidence_hints:
+      - Certain Conditions
+      - Conditions Precedent
+      - no Lender shall have an obligation
+    prompt_instructions: >
+      Summarize the principal conditions precedent or borrowing conditions required
+      before funding or continuation of the facility.
+
+  - id: disbursement_deadline
+    label: Disbursement Deadline
+    category: Dates & Milestones
+    answer_style: date
+    retrieval_queries:
+      - disbursement deadline availability end date borrowing deadline
+      - before the scheduled termination date
+    aliases:
+      - disbursement deadline
+      - borrowing deadline
+      - last draw date
+    evidence_hints:
+      - before the scheduled Termination Date
+      - Availability Period
+    prompt_instructions: >
+      Return the last date by which disbursement or drawing is permitted, if explicitly
+      stated in the agreement.
+
+  - id: signing_date
+    label: Signing Date
+    category: Dates & Milestones
+    answer_style: date
+    retrieval_queries:
+      - agreement signed dated as of executed on signing date
+      - date hereof execution date
+    aliases:
+      - signing date
+      - execution date
+      - dated as of
+    evidence_hints:
+      - dated as of
+      - date hereof
+    prompt_instructions: >
+      Return the signing or execution date of the agreement.
+
+  - id: first_disbursement_date
+    label: First Disbursement Date
+    category: Dates & Milestones
+    answer_style: date
+    retrieval_queries:
+      - first disbursement initial borrowing first advance funding date
+      - initial borrowing date
+    aliases:
+      - first disbursement
+      - initial borrowing
+      - first advance
+    evidence_hints:
+      - initial borrowing
+      - first borrowing
+    prompt_instructions: >
+      Return the first disbursement or initial borrowing date only if explicitly stated.
+
+  - id: covenant_reporting_dates
+    label: Covenant Reporting Dates
+    category: Dates & Milestones
+    answer_style: summary
+    retrieval_queries:
+      - financial statements delivered within days quarterly annual reporting dates
+      - compliance certificate reporting dates
+    aliases:
+      - reporting dates
+      - compliance certificate
+      - quarterly financial statements
+      - annual financial statements
+    evidence_hints:
+      - Compliance Certificate
+      - annual and quarterly financial statements
+    prompt_instructions: >
+      Summarize the recurring covenant reporting deadlines, including quarterly and annual
+      delivery timing if stated.
+
+  - id: financial_covenants
+    label: Financial Covenants (DSCR, Leverage, etc.)
+    category: Covenants
+    answer_style: summary
+    post_processor: financial_covenants
+    retrieval_queries:
+      - financial covenant DSCR leverage ratio fixed charge coverage
+      - section 12.14 financial covenants
+      - leverage ratio fixed charge coverage ratio
+    aliases:
+      - financial covenants
+      - leverage ratio
+      - fixed charge coverage ratio
+      - computation period
+    evidence_hints:
+      - "12.14"
+      - not permit the fixed charge coverage ratio
+      - not permit the leverage ratio
+    prompt_instructions: >
+      Summarize the covenant tests with their thresholds. Prefer exact ratio thresholds
+      and any special tighter test called out for acquisitions or investments.
+
+  - id: affirmative_covenants
+    label: Affirmative Covenants
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - affirmative covenants company shall maintain deliver comply
+      - maintenance covenants reports insurance taxes books records
+    aliases:
+      - affirmative covenants
+      - shall
+      - maintain
+      - deliver
+    evidence_hints:
+      - Covenants
+      - Further Assurances
+    prompt_instructions: >
+      Summarize the main affirmative covenants imposed on the borrower or loan parties.
+
+  - id: negative_covenants
+    label: Negative Covenants
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - negative covenants shall not limitations indebtedness liens dividends
+      - prohibited transactions restricted payments mergers asset sales
+    aliases:
+      - negative covenants
+      - not permit
+      - restricted payments
+      - liens
+      - mergers
+    evidence_hints:
+      - not permit
+      - Liens
+      - Mergers, Consolidations, Sales
+    prompt_instructions: >
+      Summarize the key negative covenants and business restrictions supported by the
+      evidence.
+
+  - id: environmental_social_covenants
+    label: Environmental & Social (E&S) Covenants
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - environmental laws hazardous materials social covenants permits esg
+      - compliance with environmental laws
+    aliases:
+      - environmental
+      - hazardous materials
+      - environmental laws
+      - social
+    evidence_hints:
+      - Environmental Laws
+      - Hazardous Materials
+    prompt_instructions: >
+      Summarize any environmental or social compliance covenants, representations, or
+      maintenance obligations stated in the agreement.
+
+  - id: commitment_fee
+    label: Commitment Fee
+    category: Financial Terms
+    answer_style: rate
+    retrieval_queries:
+      - commitment fee non-use fee unused commitment fee
+      - non-use fee rate commitment
+    aliases:
+      - commitment fee
+      - non-use fee
+      - unused commitment fee
+    evidence_hints:
+      - Non-Use Fee
+      - Non-Use Fee Rate
+    prompt_instructions: >
+      Return the commitment or non-use fee formulation and rate if explicitly stated.
+
+  - id: arrangement_fee
+    label: Front-end / Arrangement Fee
+    category: Financial Terms
+    answer_style: summary
+    retrieval_queries:
+      - arrangement fee front-end fee amendment fee upfront fee
+      - agent fee letter amendment fee
+    aliases:
+      - arrangement fee
+      - front-end fee
+      - amendment fee
+      - upfront fee
+    evidence_hints:
+      - Amendment Fee
+      - Agent Fee Letter
+    prompt_instructions: >
+      Return the front-end, arrangement, or equivalent upfront fee if explicitly stated.
+
+  - id: prepayment_terms_penalties
+    label: Prepayment Terms & Penalties
+    category: Financial Terms
+    answer_style: summary
+    retrieval_queries:
+      - prepayment penalty voluntary prepayment mandatory prepayment funding losses
+      - prepayments premium or penalty
+    aliases:
+      - prepayment
+      - voluntary prepayment
+      - mandatory prepayment
+      - penalty
+    evidence_hints:
+      - Prepayments
+      - Manner of Prepayments
+      - Funding Losses
+    prompt_instructions: >
+      Summarize the voluntary and mandatory prepayment mechanics and any related premium,
+      penalty, or funding loss language.
+
+  - id: availability_period
+    label: Availability Period
+    category: Disbursement
+    answer_style: summary
+    retrieval_queries:
+      - availability period commitment availability draw period
+      - from closing date to termination date
+    aliases:
+      - availability period
+      - draw period
+      - commitment availability
+    evidence_hints:
+      - from time to time until the Termination Date
+      - Availability Period
+    prompt_instructions: >
+      Return the period during which loans or letters of credit may be requested.
+
+  - id: drawdown_mechanics_notice_requirements
+    label: Draw-down Mechanics & Notice Requirements
+    category: Disbursement
+    answer_style: summary
+    retrieval_queries:
+      - borrowing procedures notice of borrowing conversion continuation notice
+      - drawdown mechanics notice requirements business days prior
+    aliases:
+      - borrowing procedures
+      - notice of borrowing
+      - notice requirements
+      - drawdown
+    evidence_hints:
+      - Borrowing Procedures
+      - Conversion and Continuation Procedures
+    prompt_instructions: >
+      Summarize drawdown request mechanics, timing, and notice requirements.
+
+  - id: security_package
+    label: Type of Security / Collateral
+    category: Security
+    answer_style: summary
+    post_processor: security_package
+    retrieval_queries:
+      - security collateral guarantee charge mortgage
+      - collateral means accounts inventory equipment intellectual property
+      - grant of security interest collateral package
+    aliases:
+      - collateral
+      - security interest
+      - guaranty
+      - collateral documents
+    evidence_hints:
+      - Collateral means all of the following personal property
+      - grants to the Administrative Agent
+      - ratable benefit of the Lenders
+    prompt_instructions: >
+      Summarize the type of security and main collateral package at a business-review
+      level while preserving the core asset classes.
+
+  - id: collateral_description_valuation
+    label: Collateral Description & Valuation
+    category: Security
+    answer_style: summary
+    retrieval_queries:
+      - collateral description valuation borrowing base eligible accounts inventory
+      - appraisal valuation eligible inventory
+    aliases:
+      - borrowing base
+      - eligible accounts
+      - eligible inventory
+      - collateral valuation
+    evidence_hints:
+      - Borrowing Base means
+      - value of all Eligible Inventory
+    prompt_instructions: >
+      Summarize any collateral valuation mechanics, borrowing base formula, or eligible
+      collateral descriptions stated in the agreement.
+
+  - id: security_registration_requirements
+    label: Security Registration Requirements
+    category: Security
+    answer_style: summary
+    retrieval_queries:
+      - filing perfection registration control agreement ucc financing statement
+      - collateral access agreement perfection security interest
+    aliases:
+      - perfection
+      - financing statement
+      - control agreement
+      - collateral access agreement
+      - UCC
+    evidence_hints:
+      - control agreement
+      - UCC
+      - perfect
+    prompt_instructions: >
+      Summarize any perfection, filing, registration, or control requirements for the
+      security package.
+
+  - id: subordination_intercreditor_arrangements
+    label: Subordination / Intercreditor Arrangements
+    category: Security
+    answer_style: summary
+    retrieval_queries:
+      - subordination intercreditor pari passu senior notes junior debt
+      - subordinated indebtedness intercreditor arrangement
+    aliases:
+      - subordination
+      - intercreditor
+      - senior notes
+      - subordinated debt
+    evidence_hints:
+      - Senior Notes
+      - subordinated
+      - intercreditor
+    prompt_instructions: >
+      Return any explicit subordination or intercreditor arrangement terms, if stated.
+
+  - id: withholding_tax_grossup
+    label: Withholding Tax Provisions & Gross-up Clauses
+    category: Fees & Taxes
+    answer_style: summary
+    retrieval_queries:
+      - withholding tax gross-up taxes increased costs indemnity
+      - payment increased so that after withholding
+    aliases:
+      - withholding tax
+      - gross-up
+      - taxes
+      - indemnity
+    evidence_hints:
+      - Taxes
+      - increase the payment
+      - withhold any Taxes
+    prompt_instructions: >
+      Summarize withholding tax, tax indemnity, and gross-up mechanics.
+
+  - id: dispute_resolution_mechanism
+    label: Dispute Resolution Mechanism
+    category: Legal
+    answer_style: summary
+    retrieval_queries:
+      - dispute resolution forum selection jurisdiction venue arbitration
+      - consent to jurisdiction litigation based hereon
+    aliases:
+      - dispute resolution
+      - forum selection
+      - jurisdiction
+      - venue
+      - arbitration
+    evidence_hints:
+      - FORUM SELECTION AND CONSENT TO JURISDICTION
+      - litigation based hereon
+    prompt_instructions: >
+      Summarize the governing forum, jurisdiction, venue, or dispute resolution process.
+
+  - id: governing_law
+    label: Governing Law
+    category: Legal
+    answer_style: jurisdiction
+    post_processor: governing_law
+    retrieval_limit: 4
+    retrieval_queries:
+      - governing law jurisdiction choice of law forum selection
+      - construed in accordance with the laws of
+      - state law governing agreement note assignment
+    aliases:
+      - governing law
+      - jurisdiction
+      - forum selection
+      - laws of the state
+    evidence_hints:
+      - governed by and construed in accordance with the laws of the State of
+      - made under and governed by the laws of the State of
+    prompt_instructions: >
+      Return only the governing jurisdiction, not the full sentence.
+
+  - id: waiver_amendment_thresholds
+    label: Waiver & Amendment Thresholds
+    category: Default & Remedies
+    answer_style: summary
+    retrieval_queries:
+      - amendments waivers required lenders consent threshold
+      - waiver amendment required lenders all lenders
+    aliases:
+      - waiver
+      - amendment
+      - required lenders
+      - consent
+    evidence_hints:
+      - Amendments
+      - Required Lenders
+      - consent
+    prompt_instructions: >
+      Summarize the lender consent thresholds for amendments, waivers, or modifications.
+
+  - id: agent_bank_details_role
+    label: Agent Bank Details & Role
+    category: Identification
+    answer_style: summary
+    retrieval_queries:
+      - administrative agent role address notice details agent bank
+      - appointment and authorization administrative agent notice
+    aliases:
+      - administrative agent
+      - agent
+      - notices
+      - address
+      - appointment
+    evidence_hints:
+      - THE AGENT
+      - Appointment and Authorization
+      - Notices
+    prompt_instructions: >
+      Summarize the administrative agent's role and any key notice or address details.
+
+  - id: arranger_details
+    label: Arranger Details
+    category: Identification
+    answer_style: summary
+    retrieval_queries:
+      - arranger lead arranger sole lead arranger
+      - as arranger
+    aliases:
+      - arranger
+      - lead arranger
+    evidence_hints:
+      - as Arranger
+      - Arranger
+    prompt_instructions: >
+      Return the arranger name and role if explicitly stated.
+
+  - id: detailed_fee_schedules
+    label: Detailed Fee Schedules
+    category: Financial Terms
+    answer_style: summary
+    retrieval_queries:
+      - fee schedule fee letter letter of credit fees administrative agent fees
+      - non-use fee lc fee fronting fee
+    aliases:
+      - fee schedule
+      - fee letter
+      - letter of credit fees
+      - administrative agent fees
+    evidence_hints:
+      - Administrative Agent's Fees
+      - L/C Fee Rate
+      - Agent Fee Letter
+    prompt_instructions: >
+      Summarize the fee schedule components and where the detailed fees are defined.
+
+  - id: interest_rate_reset_review_dates
+    label: Interest Rate Reset / Review Dates
+    category: Dates & Milestones
+    answer_style: summary
+    retrieval_queries:
+      - interest reset review dates interest period libor setting notice
+      - rate adjustment fifth business day
+    aliases:
+      - interest period
+      - reset date
+      - review date
+      - setting and notice of libor rates
+    evidence_hints:
+      - Setting and Notice of LIBOR Rates
+      - adjusted on the fifth Business Day
+    prompt_instructions: >
+      Summarize any rate reset, interest period review, or repricing dates.
+
+  - id: insurance_maintenance_requirements
+    label: Insurance Maintenance Requirements
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - insurance maintenance insurance covenant casualty coverage
+      - maintain insurance
+    aliases:
+      - insurance
+      - maintain insurance
+      - casualty
+    evidence_hints:
+      - Insurance
+      - maintain insurance
+    prompt_instructions: >
+      Summarize the borrower's insurance maintenance obligations.
+
+  - id: project_milestone_covenants
+    label: Project Milestone Covenants
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - milestone covenant project milestone completion schedule
+      - construction milestone performance milestone
+    aliases:
+      - milestone
+      - project milestone
+      - completion milestone
+    evidence_hints:
+      - milestone
+      - project
+    prompt_instructions: >
+      Return any project or milestone-related covenant only if explicitly stated.
+
+  - id: change_of_control_provisions
+    label: Change of Control Provisions
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - change of control provisions event of default ownership control
+      - change of control means
+    aliases:
+      - change of control
+      - control
+      - ownership change
+    evidence_hints:
+      - Change of Control
+      - Event of Default
+    prompt_instructions: >
+      Summarize the change-of-control trigger and its consequence if stated.
+
+  - id: asset_disposal_restrictions
+    label: Asset Disposal Restrictions
+    category: Covenants
+    answer_style: summary
+    retrieval_queries:
+      - asset disposition sale of assets restrictions permitted dispositions
+      - mergers consolidations sales
+    aliases:
+      - asset disposition
+      - sale of assets
+      - permitted dispositions
+      - mergers
+    evidence_hints:
+      - Permitted Dispositions
+      - Mergers, Consolidations, Sales
+    prompt_instructions: >
+      Summarize restrictions on asset sales, transfers, or dispositions.
+
+  - id: language_of_agreement
+    label: Language of the Agreement
+    category: Legal
+    answer_style: text
+    retrieval_queries:
+      - language of agreement english language
+      - agreement written in english
+    aliases:
+      - language
+      - english
+    evidence_hints:
+      - English
+      - language
+    prompt_instructions: >
+      Return the governing document language only if explicitly stated.
+
+  - id: no_conflict_other_obligations
+    label: No Conflict with Other Obligations
+    category: Representations
+    answer_style: summary
+    retrieval_queries:
+      - no conflict with other obligations no violation of agreements representations
+      - execution delivery and performance do not conflict
+    aliases:
+      - no conflict
+      - no violation
+      - other obligations
+      - representations
+    evidence_hints:
+      - no conflict
+      - execution, delivery and performance
+    prompt_instructions: >
+      Summarize any representation that the agreement does not conflict with other
+      obligations, agreements, or laws.
